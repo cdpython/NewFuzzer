@@ -9,3 +9,5 @@ Requirement
 
 pip install winappdbg olefileio-pl
 
+how to install pip on windows?
+http://stackoverflow.com/a/9038397
