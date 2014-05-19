@@ -49,7 +49,7 @@ def mutation(dest_file):
             offset = hwp.find(magic)
             mutate_position.append((offset, size))
 
-    # 해당 스트림 사이즈의 0.1 ~ 10% 변조 할 오프셋 선택
+    # 해당 스트림 사이즈의 1 ~ 10% 변조 할 오프셋 선택
     for offset, size in mutate_position:
         fuzz_offset += sample(xrange(offset, offset+size), int(size*uniform(0.01, 0.1)))
 
