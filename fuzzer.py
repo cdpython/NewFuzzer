@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 """
-HWP Fuzzer
+HWP Fuzzer 
 """
 
 import OleFileIO_PL as OLE
