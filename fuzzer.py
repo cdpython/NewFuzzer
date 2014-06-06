@@ -8,6 +8,7 @@ import os
 import shutil
 import time
 from random import sample, uniform, choice
+import winappdbg
 from winappdbg import *
 from threading import Thread
 from hashlib import md5
@@ -54,9 +55,9 @@ def mutation(dest_file):
             offset = hwp.find(magic)
             mutate_position.append((offset, size))
 
-    # 해당 스트림 사이즈의 1 ~ 10% 변조 할 오프셋 선택
+    # 해당 스트림 사이즈의 0.1 ~ 3% 변조 할 오프셋 선택
     for offset, size in mutate_position:
-        fuzz_offset += sample(xrange(offset, offset+size), int(size*uniform(0.01, 0.1)))
+        fuzz_offset += sample(xrange(offset, offset+size), int(size*uniform(0.001, 0.03)))
 
     # 변조
     for index in fuzz_offset:
@@ -75,21 +76,31 @@ def handle(event):
     global proc
     global flag
     global crash_count
+    code = event.get_event_code()
     proc = event.get_process()
     if ExceptionEvent(event.debug, event.raw).get_exception_code() in exceptions:
         print "[+] w00t!!! Crash!!"
-        crash_count += 1
+        
         flag = True
         crash = Crash(event)
-        report = crash.fullReport()
-        key = md5(report.split("\n")[0]).hexdigest()
-        try:
-            os.mkdir(r"result\%s" % key)
-            with open(r"result\%s\log.txt" % key, "w") as f:f.write(report)
-            shutil.copy(os.getcwd()+"\\seed\\"+target_file, "result\%s\seed.%s" % (key, target_file.split(".")[-1]))
-            shutil.copy(os.getcwd()+"\\tmp\\"+target_file, "result\%s\mutate.%s" % (key, target_file.split(".")[-1]))
-        except:pass
-        finally:proc.kill()
+        crash.fetch_extra_data( event, takeMemorySnapshot = 0 ) 
+        # 유니크 크래시 찾는 부분
+        unique = crash.signature[3]
+        if unique  in unique_list:
+            print "[-] Duplicate Crash"
+            proc.kill()
+        else:
+            crash_count += 1
+            unique_list.append(unique)
+            report = crash.fullReport()
+            key = md5(unique).hexdigest()
+            try:
+                os.mkdir(r"result\%s" % key)
+                with open(r"result\%s\log.txt" % key, "w") as f:f.write(report)
+                shutil.copy(os.getcwd()+"\\seed\\"+target_file.split('\\')[-1], "result\\%s\\seed.%s" % (key, target_file.split(".")[-1]))
+                shutil.copy(os.getcwd()+"\\tmp\\"+target_file.split('\\')[-1], "result\\%s\\mutate.%s" % (key, target_file.split(".")[-1]))
+            except:pass
+            finally:proc.kill()
 
 def debuggee():
     with Debug(handle, bKillOnExit=True) as dbg:
@@ -117,11 +128,12 @@ def emptyTemp():
         os.remove(r"tmp\%s" % x)
 
 
-timeLimit = 5
+timeLimit = 4
 exceptions = 0x80000002, 0xC0000005, 0xC000001D, 0xC0000025,\
              0xC0000026, 0xC000008C, 0xC000008E, 0xC0000090,\
              0xC0000091, 0xC0000092, 0xC0000093, 0xC0000094,\
              0xC0000095, 0xC0000096, 0xC00000FD, 0xC0000374
+unique_list = []
 
 program = r"C:\Program Files (x86)\Hnc\HCell80\HCell.exe"
 crash_count = 0
@@ -131,6 +143,7 @@ while True:
     flag = False
     target_file = pick()
     mutation(target_file)
+    os.system('cls')
     print "Iteration : %d / Crash : %d" % (iter, crash_count)
     maxTime = time.time() + timeLimit
     runloop()
