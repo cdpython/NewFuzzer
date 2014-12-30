@@ -15,7 +15,13 @@ from hashlib import md5
 
 def pick():
     pick_file = choice(os.listdir("seed"))
-    shutil.copy(os.getcwd()+"\\seed\\"+pick_file, "tmp")
+    try:
+        shutil.copy(os.getcwd()+"\\seed\\"+pick_file, "tmp")
+    except:
+        emptyTemp()
+    finally:
+        shutil.copy(os.getcwd()+"\\seed\\"+pick_file, "tmp")
+
     return pick_file
 
 def mutation(dest_file):
@@ -32,15 +38,18 @@ def mutation(dest_file):
     ole_list = ole.listdir()
 
     for entry in ole_list:
-        if "BinData" in entry and entry[1].find("OLE") != -1 :
+        if "BinData" in entry and not ".OLE" in entry[1]:
             find_list.append((ole.openstream("BinData/"+entry[1]).read(16), ole.get_size("BinData/"+entry[1])))
+        """
         if "BodyText" in entry:
             find_list.append((ole.openstream("BodyText/"+entry[1]).read(16), ole.get_size("BodyText/"+entry[1])))
         if "BinOLE" in entry:
             find_list.append((ole.openstream("BinOLE/"+entry[1]).read(16), ole.get_size("BinOLE/"+entry[1])))
         if "Workbook" in entry:
             find_list.append((ole.openstream("Workbook").read(16), ole.get_size("Workbook")))
+        """
     ole.close()
+    print find_list
 
     fuzz_offset = []
     fuzz_byte = xrange(256)
@@ -124,18 +133,21 @@ def runloop():
         time.sleep(0.5)
 
 def emptyTemp():
-    for x in os.listdir("tmp"):
-        os.remove(r"tmp\%s" % x)
+    while len(os.listdir("tmp")) != 0 :
+        for x in os.listdir("tmp"):
+            try:
+                os.remove(r"tmp\%s" % x)
+            except:
+                pass
 
-
-timeLimit = 4
+timeLimit = 3
 exceptions = 0x80000002, 0xC0000005, 0xC000001D, 0xC0000025,\
              0xC0000026, 0xC000008C, 0xC000008E, 0xC0000090,\
              0xC0000091, 0xC0000092, 0xC0000093, 0xC0000094,\
              0xC0000095, 0xC0000096, 0xC00000FD, 0xC0000374
 unique_list = []
 
-program = r"C:\Program Files (x86)\Hnc\HCell80\HCell.exe"
+program = r"C:\Program Files\HNC\HOffice9\Bin\Hwp.exe"
 crash_count = 0
 iter=0
 while True:

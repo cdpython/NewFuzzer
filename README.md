@@ -6,6 +6,7 @@ HWP Document Fuzzer (Simple OLE Structure Parser)
 Requirement
 - Winappdbg http://winappdbg.sourceforge.net/
 - OleFIleIO_PL http://www.decalage.info/python/olefileio
+- python disassembler http://sourceforge.net/projects/winappdbg/files/additional%20packages/diStorm/diStorm%201.7.30%20for%20Python%202/
 
 pip install winappdbg olefileio-pl
 

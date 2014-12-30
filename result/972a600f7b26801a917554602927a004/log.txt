@@ -1,0 +1,87 @@
+Access violation (first chance) at isgdi32!imsRead+0x32
+
+Security risk level: Not likely exploitable
+  This is a user mode read access violation near null, and is probably not exploitable.
+
+Command line: "C:\Program Files\HNC\HOffice9\Bin\Hwp.exe" "C:\Users\ryu\Desktop\NewFuzzer-master\tmp\plt.hwp"
+
+Environment:
+  TMP=C:\Users\ryu\AppData\Local\Temp
+  COMPUTERNAME=RYU-PC
+  USERDOMAIN=ryu-PC
+  GOROOT=C:\Go\
+  SystemDrive=C:
+  PSModulePath=C:\Windows\system32\WindowsPowerShell\v1.0\Modules\
+  PROCESSOR_IDENTIFIER=x86 Family 6 Model 70 Stepping 1, GenuineIntel
+  PROCESSOR_REVISION=4601
+  SystemRoot=C:\Windows
+  HOMEDRIVE=C:
+  windir=C:\Windows
+  TEMP=C:\Users\ryu\AppData\Local\Temp
+  C:=C:\Users\ryu\Desktop\NewFuzzer-master
+  PROCESSOR_ARCHITECTURE=x86
+  ALLUSERSPROFILE=C:\ProgramData
+  LOCALAPPDATA=C:\Users\ryu\AppData\Local
+  HOMEPATH=\Users\ryu
+  Path=C:\Program Files\HNC\HOffice9\Bin\.\..\Bin\;C:\Program Files\Parallels\Parallels Tools\Applications;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Python27;C:\Python27\Scripts;C:\Program Files\Debugging Tools for Windows (x86);C:\Program Files\010 Editor;C:\Go\bin;C:\Program Files\Bandizip\7z;C:\Program Files\HNC\HOffice9\Bin\ImgFilters\SVG
+  USERNAME=ryu
+  LOGONSERVER=\\RYU-PC
+  PROMPT=$P$G
+  SESSIONNAME=Console
+  windows_tracing_logfile=C:\BVTBin\Tests\installpackage\csilogfile.log
+  ProgramFiles=C:\Program Files
+  AVR32_HOME=C:\WinAVR-20100110
+  PATHEXT=.COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC
+  windows_tracing_flags=3
+  FP_NO_HOST_CHECK=NO
+  ComSpec=C:\Windows\system32\cmd.exe
+  APPDATA=C:\Users\ryu\AppData\Roaming
+  ProgramData=C:\ProgramData
+  NUMBER_OF_PROCESSORS=2
+  CommonProgramFiles=C:\Program Files\Common Files
+  PROCESSOR_LEVEL=6
+  USERPROFILE=C:\Users\ryu
+  OS=Windows_NT
+  PUBLIC=C:\Users\Public
+  ExitCode=00000001
+
+Registers:
+eax=00000000 ebx=0013dfbc ecx=77a5a2bb edx=00000006 esi=00000000 edi=045ec1c0
+eip=1c012a72 esp=0013d638 ebp=0013d668 iopl=0         no up ei pl zr na pe nc
+cs=001b  ss=0023  ds=0023  es=0023  fs=003b  gs=0000             efl=00010246
+
+ebp -> 14 d7 13 00 07 d2 ce 06 d0 ac 00 88 04 d7 13 00  ................
+ebx -> a4 98 c1 70 f8 ba 5e 04 75 94 08 74 a0 e0 13 00  ...p..^.u..t....
+ecx -> c2 04 00 90 90 fe ff ff ff 00 00 00 00 d0 ff ff  ................
+edi -> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+
+Code disassembly:
+   1C012A62 |          8b45 08 | mov eax, [ebp+0x8]
+   1C012A65 |               50 | push eax
+   1C012A66 |    ff15 a4540b1c | call [isgdi32!start+0xb44a4]
+   1C012A6C |          8945 ec | mov [ebp-0x14], eax
+   1C012A6F |          8b45 ec | mov eax, [ebp-0x14]
+ * 1C012A72 | 83b8 b4000000 00 | cmp dword [eax+0xb4], 0x0
+   1C012A79 |    0f84 26000000 | jz isgdi32!imsread+0x65
+   1C012A7F |          8b45 08 | mov eax, [ebp+0x8]
+
+Stack trace:
+Frame    Origin
+0013D668 06CED207 (imhgl9!ImportFile+0xc207)
+
+Stack pointers:
+[esp+0x00] -> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+[esp+0x08] -> a4 98 c1 70 f8 ba 5e 04 75 94 08 74 a0 e0 13 00  ...p..^.u..t....
+[esp+0x0a] -> 00 a8 00 01 00 00 00 01 00 00 00 01 00 10 00 00  ................
+[esp+0x11] -> 05 28 81 f9 76 65 00 01 03 18 4c fc 76 e5 02 01  .(..ve....L.v...
+[esp+0x18] -> 31 34 2c 20 32 34 00 34 00 34 00 37 00 00 00 00  14,.24.4.4.7....
+[esp+0x24] -> 59 df bf e9 c2 e7 c6 e5 c8 e5 cc e3 d0 e1 d0 dd  Y...............
+[esp+0x25] -> 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+[esp+0x28] -> 88 0d 81 28 84 3b 81 28 8a 05 ab 29 84 09 81 29  ...(.;.(...)...)
+[esp+0x2a] -> 00 00 00 00 00 4b 31 00 00 00 80 08 00 00 00 44  .....K1........D
+
+Stack dump:
+0013D638: c0 c1 5e 04 00 00 00 00 bc df 13 00 01 00 00 00  ..^.............
+0013D648: ff 2f 00 00 77 0c 00 00 a0 d6 13 00 00 00 00 00  ./..w...........
+0013D658: 00 00 00 00 d3 a8 ac 00 05 d7 13 00 7b 08 00 00  ............{...
+
